@@ -1,7 +1,5 @@
 # TrafficVision AI: Smart Traffic Prediction & Congestion Management System
 
-<<<<<<< HEAD
-TrafficVision AI is an AI-powered traffic prediction and congestion management platform designed to help city authorities monitor live traffic conditions, predict congestion levels, and optimize traffic flow.
 
 ## Features
 - **User Authentication**: Secure login and registration with password hashing (Bcrypt).
@@ -80,6 +78,13 @@ You can register new users through the UI and select their roles.
 - **Public**: Register a user and select 'Public User' role.
 
 ---
+
+
+
+
+
+
+THIS IS OVERALL
 Developed for city traffic optimization and management.
 =======
 ![TrafficVision AI Dashboard](https://claude.ai/chat/dashboard-preview.png)
