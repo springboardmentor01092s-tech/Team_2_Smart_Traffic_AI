@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="mb-3">Traffic Dashboard</h2>
+    </div>
+    <!-- Statistics Cards -->
+    <div class="col-md-2 mb-3">
+        <div class="card text-white bg-primary shadow">
+            <div class="card-body text-center">
+                <h6>Total Roads</h6>
+                <h3>{{ stats.total_roads }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card text-white bg-danger shadow">
+            <div class="card-body text-center">
+                <h6>Heavy</h6>
+                <h3>{{ stats.heavy }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card text-white bg-warning shadow">
+            <div class="card-body text-center">
+                <h6>Moderate</h6>
+                <h3>{{ stats.moderate }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card text-white bg-success shadow">
+            <div class="card-body text-center">
+                <h6>Low</h6>
+                <h3>{{ stats.low }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-info shadow">
+            <div class="card-body text-center">
+                <h6>Active Alerts</h6>
+                <h3>{{ stats.active_alerts }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Live Traffic Table -->
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Live Traffic Conditions</h5>
+                {% if current_user.role in ['Admin', 'Traffic Operator'] %}
+                <button class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#updateModal">Update Data</button>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Road Name</th>
+                                <th>Vehicle Count</th>
+                                <th>Avg Speed</th>
+                                <th>Congestion</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for road in traffic_data %}
+                            <tr>
+                                <td>{{ road.road_name }}</td>
+                                <td>{{ road.vehicle_count }}</td>
+                                <td>{{ road.avg_speed }} km/h</td>
+                                <td>
+                                    <span class="badge {% if road.congestion_level == 'Heavy' %}bg-danger{% elif road.congestion_level == 'Moderate' %}bg-warning{% else %}bg-success{% endif %}">
+                                        {{ road.congestion_level }}
+                                    </span>
+                                </td>
+                                <td>{{ road.last_updated.strftime('%H:%M:%S') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Traffic Flow Analysis</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trafficChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts Panel -->
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Recent Alerts</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for alert in alerts %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 text-{% if alert.severity == 'Critical' %}danger{% elif alert.severity == 'Warning' %}warning{% else %}info{% endif %}">
+                            {{ alert.severity }}
+                        </h6>
+                        <small>{{ alert.timestamp.strftime('%H:%M') }}</small>
+                    </div>
+                    <p class="mb-1 small">{{ alert.message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Modal -->
+{% if current_user.role in ['Admin', 'Traffic Operator'] %}
+<div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Traffic Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('dashboard.update_traffic') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Road</label>
+                        <select name="road_id" class="form-select" required>
+                            {% for road in traffic_data %}
+                            <option value="{{ road.id }}">{{ road.road_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Vehicle Count</label>
+                        <input type="number" name="vehicle_count" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Average Speed (km/h)</label>
+                        <input type="number" step="0.1" name="avg_speed" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const ctx = document.getElementById('trafficChart').getContext('2d');
+    const labels = [{% for road in traffic_data %}"{{ road.road_name }}",{% endfor %}];
+    const vehicleCounts = [{% for road in traffic_data %}{{ road.vehicle_count }},{% endfor %}];
+    const avgSpeeds = [{% for road in traffic_data %}{{ road.avg_speed }},{% endfor %}];
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Vehicle Count',
+                    data: vehicleCounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Avg Speed (km/h)',
+                    data: avgSpeeds,
+                    type: 'line',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false,
+                    tension: 0.1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
