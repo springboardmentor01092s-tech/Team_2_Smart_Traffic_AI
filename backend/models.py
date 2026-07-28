@@ -1,31 +1,26 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import declarative_base
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-engine = create_engine(DATABASE_URL)
-
-Base = declarative_base()
-
+from sqlalchemy import Column, Integer, String, Float, DateTime
+from database import Base, engine
+import datetime
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100))
-    email = Column(String(100), unique=True)
-    password = Column(String(255))
-    role = Column(String(30))
-
+    full_name = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True, nullable=False, index=True)
+    password = Column(String(255), nullable=False)
+    role = Column(String(30), nullable=False, default="commuter")
 
 class Traffic(Base):
     __tablename__ = "traffic"
 
     id = Column(Integer, primary_key=True, index=True)
-    location = Column(String(100))
-    vehicle_count = Column(Integer)
-    congestion_level = Column(String(50))
+    location = Column(String(100), nullable=False)
+    road_name = Column(String(100), nullable=False)
+    latitude = Column(Float, nullable=False)
+    longitude = Column(Float, nullable=False)
+    vehicle_count = Column(Integer, default=0)
+    capacity = Column(Integer, default=100)
+    average_speed = Column(Float, default=40.0)
+    congestion_level = Column(String(50), default="Low")
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)

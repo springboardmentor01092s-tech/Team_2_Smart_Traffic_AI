@@ -1,0 +1,85 @@
+.dashboard {
+  display: flex;
+  background: #0f172a;
+  min-height: 100vh;
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 32px 40px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.map-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.side-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Tab Placeholder Styles */
+.tab-placeholder-card {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 48px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  color: #f8fafc;
+  text-align: center;
+  max-width: 640px;
+  margin: 60px auto;
+}
+
+.tab-placeholder-card h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+}
+
+.tab-placeholder-card .subtitle {
+  color: #94a3b8;
+  font-size: 14px;
+  margin: 0 0 36px 0;
+}
+
+.placeholder-details {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 40px 32px;
+}
+
+.icon-badge {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.placeholder-details h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #3b82f6;
+}
+
+.placeholder-details p {
+  color: #cbd5e1;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}

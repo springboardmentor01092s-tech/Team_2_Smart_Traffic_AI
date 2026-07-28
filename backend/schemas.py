@@ -1,7 +1,8 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class UserCreate(BaseModel):
-    name: str
+    full_name: str
     email: str
     password: str
     role: str
@@ -12,5 +13,9 @@ class UserLogin(BaseModel):
 
 class TrafficCreate(BaseModel):
     location: str
+    road_name: str
+    latitude: float
+    longitude: float
     vehicle_count: int
-    congestion_level: str
+    capacity: int
+    average_speed: float
