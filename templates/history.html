@@ -1,11 +1,8 @@
 {% extends "base.html" %}
 
-
 {% block title %}
-Traffic History
+Traffic Prediction Report
 {% endblock %}
-
-
 
 
 {% block head %}
@@ -15,402 +12,397 @@ Traffic History
 {% endblock %}
 
 
-
-
-
-
 {% block content %}
 
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-
-<div class="container mt-4">
-
-
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-
+    <div>
 
         <h2>
-            📈 Traffic Congestion History
+            📊 Traffic Prediction Report
         </h2>
 
+        <p class="text-muted mb-0">
+            Historical traffic analysis and congestion report
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <a href="{{ url_for('dashboard.download_report') }}"
+           class="btn btn-danger me-2">
+
+            📥 Download PDF Report
+
+        </a>
 
 
         <a href="{{ url_for('dashboard.index') }}"
            class="btn btn-dark">
 
-            Back to Dashboard
+            ← Back to Dashboard
 
         </a>
 
+    </div>
+
+</div>
+
+
+<!-- ========================================= -->
+<!-- REPORT SUMMARY -->
+<!-- ========================================= -->
+
+<div class="row g-3 mb-4">
+
+
+    <!-- TOTAL RECORDS -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Total Records
+                </h6>
+
+                <h2>
+                    {{ report_stats.total_records }}
+                </h2>
+
+            </div>
+
+        </div>
 
     </div>
 
 
+    <!-- HEAVY -->
 
+    <div class="col-md-3">
 
+        <div class="card shadow h-100">
 
+            <div class="card-body">
 
+                <h6 class="text-muted">
+                    🔴 Heavy Congestion
+                </h6>
 
-    <!-- History Table -->
+                <h2 class="text-danger">
+                    {{ report_stats.heavy }}
+                </h2>
 
-
-    <div class="card shadow">
-
-
-        <div class="card-header bg-primary text-white">
-
-            <h5 class="mb-0">
-
-                Previous Traffic Records
-
-            </h5>
+            </div>
 
         </div>
 
+    </div>
 
 
+    <!-- MODERATE -->
 
-        <div class="card-body p-0">
+    <div class="col-md-3">
 
+        <div class="card shadow h-100">
 
-            <div class="table-responsive">
+            <div class="card-body">
 
+                <h6 class="text-muted">
+                    🟡 Moderate Congestion
+                </h6>
 
-                <table class="table table-hover mb-0">
+                <h2 class="text-warning">
+                    {{ report_stats.moderate }}
+                </h2>
 
+            </div>
 
-                    <thead class="table-light">
+        </div>
 
-
-                        <tr>
-
-                            <th>
-                                Road Name
-                            </th>
-
-
-                            <th>
-                                Vehicle Count
-                            </th>
+    </div>
 
 
-                            <th>
-                                Average Speed
-                            </th>
+    <!-- LOW -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    🟢 Low Congestion
+                </h6>
+
+                <h2 class="text-success">
+                    {{ report_stats.low }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 
-                            <th>
-                                Congestion Level
-                            </th>
+<!-- ========================================= -->
+<!-- CONGESTION TREND -->
+<!-- ========================================= -->
+
+<div class="card shadow mb-4">
+
+    <div class="card-header bg-dark text-white">
+
+        <h5 class="mb-0">
+            📈 Congestion Trend Analysis
+        </h5>
+
+    </div>
 
 
-                            <th>
-                                Recorded Time
-                            </th>
+    <div class="card-body">
+
+        <canvas
+            id="congestionChart"
+            height="100">
+        </canvas>
+
+    </div>
+
+</div>
 
 
-                        </tr>
+<!-- ========================================= -->
+<!-- PREVIOUS TRAFFIC RECORDS -->
+<!-- ========================================= -->
+
+<div class="card shadow mb-4">
+
+    <div class="card-header bg-primary text-white">
+
+        <h5 class="mb-0">
+            🚦 Previous Traffic Records
+        </h5>
+
+    </div>
 
 
-                    </thead>
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>
+                            Road Name
+                        </th>
+
+                        <th>
+                            Vehicle Count
+                        </th>
+
+                        <th>
+                            Average Speed
+                        </th>
+
+                        <th>
+                            Congestion Level
+                        </th>
+
+                        <th>
+                            Recorded Time
+                        </th>
+
+                    </tr>
+
+                </thead>
 
 
+                <tbody>
+
+                {% for record in history %}
+
+                    <tr>
+
+                        <td>
+                            {{ record.road_name }}
+                        </td>
 
 
-
-                    <tbody>
-
-
-                    {% for record in history %}
+                        <td>
+                            {{ record.vehicle_count }}
+                        </td>
 
 
-
-                        <tr>
-
-
-                            <td>
-                                {{ record.road_name }}
-                            </td>
+                        <td>
+                            {{ record.avg_speed }} km/h
+                        </td>
 
 
-
-                            <td>
-                                {{ record.vehicle_count }}
-                            </td>
-
-
-
-
-                            <td>
-                                {{ record.avg_speed }} km/h
-                            </td>
-
-
-
-
-
-                            <td>
-
-
+                        <td>
 
                             {% if record.congestion_level == "Heavy" %}
-
 
                                 <span class="badge bg-danger">
                                     🔴 Heavy
                                 </span>
 
-
-
-
                             {% elif record.congestion_level == "Moderate" %}
 
-
-                                <span class="badge bg-warning">
+                                <span class="badge bg-warning text-dark">
                                     🟡 Moderate
                                 </span>
 
-
-
-
                             {% else %}
-
 
                                 <span class="badge bg-success">
                                     🟢 Low
                                 </span>
 
-
-
                             {% endif %}
 
+                        </td>
 
 
-                            </td>
+                        <td>
+
+                            {{ record.recorded_at.strftime(
+                                '%d-%m-%Y %H:%M:%S'
+                            ) }}
+
+                        </td>
+
+                    </tr>
 
 
+                {% else %}
 
+                    <tr>
 
+                        <td
+                            colspan="5"
+                            class="text-center py-4">
 
+                            No traffic history available.
 
-                            <td>
+                        </td>
 
-                                {{ record.recorded_at.strftime('%d-%m-%Y %H:%M:%S') }}
+                    </tr>
 
-                            </td>
+                {% endfor %}
 
+                </tbody>
 
-
-                        </tr>
-
-
-
-                    {% endfor %}
-
-
-
-                    </tbody>
-
-
-                </table>
-
-
-
-            </div>
-
+            </table>
 
         </div>
-
 
     </div>
-
-
-
-
-
-
-
-
-
-    <!-- Congestion Chart -->
-
-
-    <div class="card shadow mt-4">
-
-
-        <div class="card-header bg-dark text-white">
-
-
-            <h5>
-
-                📊 Congestion Trend Analysis
-
-            </h5>
-
-
-        </div>
-
-
-
-
-        <div class="card-body">
-
-
-            <canvas id="congestionChart"></canvas>
-
-
-        </div>
-
-
-
-    </div>
-
-
-
 
 </div>
 
 
-
-
-
 {% endblock %}
-
-
-
-
-
 
 
 {% block scripts %}
 
-
-
 <script>
 
+    const labels =
+        {{ labels | safe }};
 
+    const congestionValues =
+        {{ congestion_values | safe }};
 
-const ctx = document
-    .getElementById('congestionChart')
-    .getContext('2d');
 
+    const ctx =
+        document.getElementById(
+            "congestionChart"
+        );
 
 
+    new Chart(ctx, {
 
+        type: "line",
 
-new Chart(ctx, {
+        data: {
 
+            labels: labels,
 
-    type: 'line',
+            datasets: [
 
+                {
 
+                    label: "Congestion Level",
 
-    data: {
+                    data: congestionValues,
 
+                    tension: 0.3,
 
-        labels: {{ labels | safe }},
-
-
-
-        datasets: [
-
-
-            {
-
-
-                label: "Congestion Level",
-
-
-                data: {{ congestion_values | safe }},
-
-
-
-                fill: false,
-
-
-                tension: 0.3
-
-
-            }
-
-
-        ]
-
-
-    },
-
-
-
-
-
-    options: {
-
-
-        responsive: true,
-
-
-
-        scales: {
-
-
-            y: {
-
-
-                beginAtZero: true,
-
-
-                ticks: {
-
-
-                    stepSize: 1,
-
-
-
-                    callback: function(value){
-
-
-
-                        if(value == 1)
-                            return "Low";
-
-
-
-                        if(value == 2)
-                            return "Moderate";
-
-
-
-                        if(value == 3)
-                            return "Heavy";
-
-
-
-                    }
-
+                    fill: false
 
                 }
 
+            ]
+
+        },
+
+
+        options: {
+
+            responsive: true,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        stepSize: 1,
+
+                        callback: function(value) {
+
+                            if (value === 1) {
+                                return "Low";
+                            }
+
+                            if (value === 2) {
+                                return "Moderate";
+                            }
+
+                            if (value === 3) {
+                                return "Heavy";
+                            }
+
+                            return value;
+
+                        }
+
+                    }
+
+                }
 
             }
 
-
         }
 
-
-    }
-
-
-
-});
-
-
+    });
 
 </script>
 
-
-
 {% endblock %}
-
-
 

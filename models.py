@@ -154,4 +154,43 @@ class Alert(db.Model):
     )
     # Info, Warning, Critical
 
+
+    # -----------------------------
+# AI Prediction History
+# -----------------------------
+
+class PredictionHistory(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    temperature = db.Column(
+        db.Float
+    )
+
+    rain = db.Column(
+        db.Float
+    )
+
+    clouds = db.Column(
+        db.Float
+    )
+
+    hour = db.Column(
+        db.Integer
+    )
+
+    predicted_congestion = db.Column(
+        db.String(50)
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    
+
     

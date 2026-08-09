@@ -2,817 +2,885 @@
 
 {% block title %}Dashboard{% endblock %}
 
-
 {% block head %}
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 {% endblock %}
 
 
-
 {% block content %}
-
 
 <!-- Header -->
 
 <div class="row mb-4">
 
-<div class="col-md-12">
+    <div class="col-md-12">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <h2>
+                    🚦 Traffic Dashboard
+                </h2>
+
+                <p class="text-muted">
+                    Smart Traffic Prediction & Congestion Monitoring
+                </p>
+
+            </div>
+
+            <div>
+
+                <span class="badge bg-success fs-6">
+                    🟢 LIVE
+                </span>
+
+            </div>
+
+        </div>
 
 
-<div class="d-flex justify-content-between align-items-center">
+        <div class="alert alert-primary shadow-sm mt-3">
 
+            <h5>
+                Welcome,
+                <strong>{{ current_user.username }}</strong>
+            </h5>
 
-<div>
+            Role:
 
-<h2>
-🚦 Traffic Dashboard
-</h2>
+            <span class="badge bg-dark">
+                {{ current_user.role }}
+            </span>
 
+            <br><br>
 
-<p class="text-muted">
-Smart Traffic Prediction & Congestion Monitoring
-</p>
+            Last Refresh:
 
+            <strong>
+                {{ last_refresh }}
+            </strong>
 
-</div>
+        </div>
 
-
-
-<div>
-
-<span class="badge bg-success fs-6">
-
-🟢 LIVE
-
-</span>
-
-</div>
-
-
-</div>
-
-
-
-<div class="alert alert-primary shadow-sm mt-3">
-
-
-<h5>
-
-Welcome,
-
-<strong>
-{{ current_user.username }}
-</strong>
-
-</h5>
-
-
-Role:
-
-<span class="badge bg-dark">
-
-{{ current_user.role }}
-
-</span>
-
-
-<br><br>
-
-
-Last Refresh:
-
-<strong>
-{{ last_refresh }}
-</strong>
-
+    </div>
 
 </div>
-
-
-</div>
-
-</div>
-
-
 
 
 
 <!-- Statistics -->
 
-
 <div class="row mb-4">
 
 
-<div class="col-md-2 mb-3">
+    <div class="col-md-2 mb-3">
 
-<div class="card text-white bg-primary shadow">
+        <div class="card text-white bg-primary shadow">
 
-<div class="card-body text-center">
+            <div class="card-body text-center">
 
-<h6>Total Roads</h6>
+                <h6>Total Roads</h6>
 
-<h3>
-{{ stats.total_roads }}
-</h3>
+                <h3>
+                    {{ stats.total_roads }}
+                </h3>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</div>
-
-
+    </div>
 
 
+    <div class="col-md-2 mb-3">
 
-<div class="col-md-2 mb-3">
+        <div class="card text-white bg-danger shadow">
 
-<div class="card text-white bg-danger shadow">
+            <div class="card-body text-center">
 
-<div class="card-body text-center">
+                <h6>Heavy</h6>
 
-<h6>Heavy</h6>
+                <h3>
+                    {{ stats.heavy }}
+                </h3>
 
-<h3>
-{{ stats.heavy }}
-</h3>
+            </div>
 
-</div>
+        </div>
 
-</div>
-
-</div>
-
+    </div>
 
 
+    <div class="col-md-2 mb-3">
+
+        <div class="card text-white bg-warning shadow">
+
+            <div class="card-body text-center">
+
+                <h6>Moderate</h6>
+
+                <h3>
+                    {{ stats.moderate }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
 
 
-<div class="col-md-2 mb-3">
+    <div class="col-md-2 mb-3">
 
-<div class="card text-white bg-warning shadow">
+        <div class="card text-white bg-success shadow">
 
-<div class="card-body text-center">
+            <div class="card-body text-center">
 
-<h6>Moderate</h6>
+                <h6>Low</h6>
 
-<h3>
-{{ stats.moderate }}
-</h3>
+                <h3>
+                    {{ stats.low }}
+                </h3>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</div>
-
-
+    </div>
 
 
+    <div class="col-md-4 mb-3">
 
-<div class="col-md-2 mb-3">
+        <div class="card text-white bg-info shadow">
 
-<div class="card text-white bg-success shadow">
+            <div class="card-body text-center">
 
-<div class="card-body text-center">
+                <h6>Active Alerts</h6>
 
-<h6>Low</h6>
+                <h3>
+                    {{ stats.active_alerts }}
+                </h3>
 
-<h3>
-{{ stats.low }}
-</h3>
+            </div>
 
-</div>
+        </div>
 
-</div>
-
-</div>
-
-
-
-
-
-<div class="col-md-4 mb-3">
-
-<div class="card text-white bg-info shadow">
-
-<div class="card-body text-center">
-
-<h6>Active Alerts</h6>
-
-<h3>
-{{ stats.active_alerts }}
-</h3>
+    </div>
 
 </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-
-
 
 
 
 <!-- Congestion Summary -->
 
+<div class="card shadow mb-4">
+
+    <div class="card-header bg-secondary text-white">
+
+        <h5>
+            🚦 Congestion Tracking Summary
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="row text-center">
+
+
+            <div class="col-md-4">
+
+                <h3 class="text-danger">
+                    {{ stats.heavy }}
+                </h3>
+
+                Heavy Roads
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <h3 class="text-warning">
+                    {{ stats.moderate }}
+                </h3>
+
+                Moderate Roads
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <h3 class="text-success">
+                    {{ stats.low }}
+                </h3>
+
+                Low Roads
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ====================================================== -->
+<!-- AI CONGESTION FORECASTING -->
+<!-- ====================================================== -->
 
 <div class="card shadow mb-4">
 
+    <div class="card-header bg-primary text-white">
 
-<div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">
+            🤖 AI Congestion Forecasting
+        </h5>
+
+    </div>
 
 
-<h5>
-🚦 Congestion Tracking Summary
-</h5>
+    <div class="card-body">
 
+
+        <form
+            action="{{ url_for('dashboard.predict_congestion') }}"
+            method="POST"
+        >
+
+
+            <div class="row">
+
+
+                <!-- Temperature -->
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Temperature
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.1"
+                        class="form-control"
+                        name="temp"
+                        value="0"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- Rain -->
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Rain (mm)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.1"
+                        class="form-control"
+                        name="rain_1h"
+                        value="0"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- Clouds -->
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Cloud %
+                    </label>
+
+                    <input
+                        type="number"
+                        class="form-control"
+                        name="clouds_all"
+                        value="0"
+                        min="0"
+                        max="100"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- Hour -->
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Hour
+                    </label>
+
+                    <input
+                        type="number"
+                        class="form-control"
+                        name="hour"
+                        value="0"
+                        min="0"
+                        max="23"
+                        required
+                    >
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="mt-4">
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+
+                    🚦 Predict Congestion
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+
+        {% if prediction %}
+
+        <hr>
+
+        <div class="alert alert-info mt-3">
+
+            <h5 class="mb-2">
+                🤖 AI Prediction Result
+            </h5>
+
+
+            <h3>
+
+                <span class="badge bg-danger">
+
+                    {{ prediction }}
+
+                </span>
+
+            </h3>
+
+        </div>
+
+        {% endif %}
+
+
+    </div>
 
 </div>
 
 
 
-<div class="card-body">
-
-
-<div class="row text-center">
-
-
-<div class="col-md-4">
-
-<h3 class="text-danger">
-{{ stats.heavy }}
-</h3>
-
-Heavy Roads
-
-</div>
-
-
-
-<div class="col-md-4">
-
-<h3 class="text-warning">
-{{ stats.moderate }}
-</h3>
-
-Moderate Roads
-
-</div>
-
-
-
-<div class="col-md-4">
-
-<h3 class="text-success">
-{{ stats.low }}
-</h3>
-
-Low Roads
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
+<!-- ====================================================== -->
+<!-- TRAFFIC AND ALERTS -->
+<!-- ====================================================== -->
 
 <div class="row">
 
 
+    <!-- Traffic Table -->
 
-<!-- Traffic Table -->
-
-
-<div class="col-md-8">
+    <div class="col-md-8">
 
 
-<div class="card shadow mb-4">
+        <div class="card shadow mb-4">
 
 
-
-<div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-
-
-<h5 class="mb-0">
-
-Live Traffic Conditions
-
-</h5>
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
 
 
+                <h5 class="mb-0">
+                    Live Traffic Conditions
+                </h5>
 
-<div>
+
+                <div>
 
 
-<a href="{{ url_for('dashboard.traffic_history') }}"
-class="btn btn-sm btn-outline-light">
+                    <a
+                        href="{{ url_for('dashboard.traffic_history') }}"
+                        class="btn btn-sm btn-outline-light"
+                    >
 
-📈 History
+                        📈 History
 
-</a>
+                    </a>
 
 
 
+                    {% if current_user.role in ['Admin','Traffic Operator'] %}
+
+                    <button
+                        class="btn btn-sm btn-outline-light"
+                        data-bs-toggle="modal"
+                        data-bs-target="#updateModal"
+                    >
+
+                        Update Data
+
+                    </button>
+
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+
+
+
+            <div class="card-body p-0">
+
+
+                <table class="table table-hover mb-0">
+
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>
+                                Road
+                            </th>
+
+                            <th>
+                                Vehicles
+                            </th>
+
+                            <th>
+                                Speed
+                            </th>
+
+                            <th>
+                                Congestion
+                            </th>
+
+                            <th>
+                                Updated
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    {% for road in traffic_data %}
+
+                    <tr>
+
+
+                        <td>
+                            {{ road.road_name }}
+                        </td>
+
+
+                        <td>
+                            {{ road.vehicle_count }}
+                        </td>
+
+
+                        <td>
+                            {{ road.avg_speed }} km/h
+                        </td>
+
+
+                        <td>
+
+
+                            {% if road.congestion_level == "Heavy" %}
+
+                            <span class="badge bg-danger">
+                                🔴 Heavy
+                            </span>
+
+
+                            {% elif road.congestion_level == "Moderate" %}
+
+                            <span class="badge bg-warning">
+                                🟡 Moderate
+                            </span>
+
+
+                            {% else %}
+
+                            <span class="badge bg-success">
+                                🟢 Low
+                            </span>
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <td>
+
+                            {{ road.last_updated.strftime(
+                                '%H:%M:%S'
+                            ) }}
+
+                        </td>
+
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Traffic Chart -->
+
+        <div class="card shadow">
+
+
+            <div class="card-header bg-dark text-white">
+
+                <h5>
+                    Traffic Flow Analysis
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <canvas id="trafficChart"></canvas>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- Alerts -->
+
+    <div class="col-md-4">
+
+
+        <div class="card shadow">
+
+
+            <div class="card-header bg-dark text-white">
+
+                <h5>
+                    Recent Alerts
+                </h5>
+
+            </div>
+
+
+            <div class="list-group">
+
+
+                {% for alert in alerts %}
+
+                <div class="list-group-item">
+
+
+                    <strong>
+                        {{ alert.severity }}
+                    </strong>
+
+
+                    <p>
+                        {{ alert.message }}
+                    </p>
+
+
+                    <small>
+
+                        {{ alert.timestamp.strftime('%H:%M') }}
+
+                    </small>
+
+
+                </div>
+
+                {% endfor %}
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ====================================================== -->
+<!-- UPDATE TRAFFIC MODAL -->
+<!-- ====================================================== -->
 
 {% if current_user.role in ['Admin','Traffic Operator'] %}
 
 
-<button class="btn btn-sm btn-outline-light"
-data-bs-toggle="modal"
-data-bs-target="#updateModal">
+<div
+    class="modal fade"
+    id="updateModal"
+    tabindex="-1"
+>
 
-Update Data
 
-</button>
+    <div class="modal-dialog">
+
+
+        <div class="modal-content">
+
+
+            <form
+                action="{{ url_for('dashboard.update_traffic') }}"
+                method="POST"
+            >
+
+
+                <div class="modal-header">
+
+                    <h5>
+                        Update Traffic Data
+                    </h5>
+
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                    ></button>
+
+                </div>
+
+
+
+                <div class="modal-body">
+
+
+                    <label>
+                        Select Road
+                    </label>
+
+
+                    <select
+                        name="road_id"
+                        class="form-select mb-3"
+                        required
+                    >
+
+
+                        {% for road in traffic_data %}
+
+                        <option value="{{ road.id }}">
+
+                            {{ road.road_name }}
+
+                        </option>
+
+                        {% endfor %}
+
+
+                    </select>
+
+
+
+                    <label>
+                        Vehicle Count
+                    </label>
+
+
+                    <input
+                        type="number"
+                        name="vehicle_count"
+                        class="form-control mb-3"
+                        required
+                    >
+
+
+
+                    <label>
+                        Average Speed (km/h)
+                    </label>
+
+
+                    <input
+                        type="number"
+                        step="0.1"
+                        name="avg_speed"
+                        class="form-control"
+                        required
+                    >
+
+
+                </div>
+
+
+
+                <div class="modal-footer">
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        Save Changes
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
 
 
 {% endif %}
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="card-body p-0">
-
-
-<table class="table table-hover mb-0">
-
-
-<thead class="table-light">
-
-
-<tr>
-
-<th>Road</th>
-
-<th>Vehicles</th>
-
-<th>Speed</th>
-
-<th>Congestion</th>
-
-<th>Updated</th>
-
-</tr>
-
-
-</thead>
-
-
-
-<tbody>
-
-
-{% for road in traffic_data %}
-
-
-<tr>
-
-
-<td>
-{{ road.road_name }}
-</td>
-
-
-
-<td>
-{{ road.vehicle_count }}
-</td>
-
-
-
-<td>
-{{ road.avg_speed }} km/h
-</td>
-
-
-
-
-<td>
-
-
-{% if road.congestion_level == "Heavy" %}
-
-<span class="badge bg-danger">
-🔴 Heavy
-</span>
-
-
-{% elif road.congestion_level == "Moderate" %}
-
-
-<span class="badge bg-warning">
-🟡 Moderate
-</span>
-
-
-
-{% else %}
-
-
-<span class="badge bg-success">
-🟢 Low
-</span>
-
-
-
-{% endif %}
-
-
-
-</td>
-
-
-
-
-<td>
-
-{{ road.last_updated.strftime('%H:%M:%S') }}
-
-</td>
-
-
-</tr>
-
-
-{% endfor %}
-
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- Chart -->
-
-
-<div class="card shadow">
-
-
-<div class="card-header bg-dark text-white">
-
-<h5>
-Traffic Flow Analysis
-</h5>
-
-</div>
-
-
-<div class="card-body">
-
-<canvas id="trafficChart"></canvas>
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<!-- Alerts -->
-
-
-<div class="col-md-4">
-
-
-<div class="card shadow">
-
-
-<div class="card-header bg-dark text-white">
-
-<h5>
-Recent Alerts
-</h5>
-
-</div>
-
-
-
-<div class="list-group">
-
-
-{% for alert in alerts %}
-
-
-<div class="list-group-item">
-
-
-<strong>
-{{ alert.severity }}
-</strong>
-
-
-<p>
-{{ alert.message }}
-</p>
-
-
-<small>
-
-{{ alert.timestamp.strftime('%H:%M') }}
-
-</small>
-
-
-</div>
-
-
-{% endfor %}
-
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-
-<!-- Update Modal -->
-
-
-{% if current_user.role in ['Admin','Traffic Operator'] %}
-
-
-<div class="modal fade" id="updateModal" tabindex="-1">
-
-
-<div class="modal-dialog">
-
-
-<div class="modal-content">
-
-
-<form action="{{ url_for('dashboard.update_traffic') }}"
-method="POST">
-
-
-
-<div class="modal-header">
-
-
-<h5>
-Update Traffic Data
-</h5>
-
-
-<button type="button"
-class="btn-close"
-data-bs-dismiss="modal">
-</button>
-
-
-</div>
-
-
-
-
-
-<div class="modal-body">
-
-
-<label>
-Select Road
-</label>
-
-
-<select name="road_id"
-class="form-select mb-3"
-required>
-
-
-{% for road in traffic_data %}
-
-
-<option value="{{ road.id }}">
-
-{{ road.road_name }}
-
-</option>
-
-
-{% endfor %}
-
-
-</select>
-
-
-
-
-
-<label>
-Vehicle Count
-</label>
-
-
-<input type="number"
-name="vehicle_count"
-class="form-control mb-3"
-required>
-
-
-
-
-
-
-<label>
-Average Speed (km/h)
-</label>
-
-
-<input type="number"
-step="0.1"
-name="avg_speed"
-class="form-control"
-required>
-
-
-
-</div>
-
-
-
-
-
-
-<div class="modal-footer">
-
-
-<button type="submit"
-class="btn btn-primary">
-
-Save Changes
-
-</button>
-
-
-</div>
-
-
-
-</form>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-{% endif %}
-
-
-
-
 
 
 {% endblock %}
-
-
-
-
 
 
 
 {% block scripts %}
 
-
 <script>
 
-
 const ctx =
-document.getElementById('trafficChart').getContext('2d');
-
+    document
+        .getElementById('trafficChart')
+        .getContext('2d');
 
 
 new Chart(ctx, {
 
-
-type:'bar',
-
-
-data:{
+    type: 'bar',
 
 
-labels:[
+    data: {
 
-{% for road in traffic_data %}
+        labels: [
 
-"{{ road.road_name }}",
+            {% for road in traffic_data %}
 
-{% endfor %}
+            "{{ road.road_name }}",
 
-],
+            {% endfor %}
 
-
-
-datasets:[
+        ],
 
 
-{
+        datasets: [
 
-label:"Vehicle Count",
+            {
 
-data:[
-
-{% for road in traffic_data %}
-
-{{ road.vehicle_count }},
-
-{% endfor %}
-
-]
-
-}
+                label: "Vehicle Count",
 
 
+                data: [
 
-]
+                    {% for road in traffic_data %}
+
+                    {{ road.vehicle_count }},
+
+                    {% endfor %}
+
+                ],
 
 
-}
+                backgroundColor: [
+
+                    "#0d6efd",
+                    "#198754",
+                    "#ffc107",
+                    "#dc3545",
+                    "#6f42c1"
+
+                ],
 
 
+                borderWidth: 1
+
+            }
+
+        ]
+
+    },
+
+
+    options: {
+
+        responsive: true,
+
+        scales: {
+
+            y: {
+
+                beginAtZero: true
+
+            }
+
+        }
+
+    }
 
 });
 
-
-
-
-// Live refresh
-
-setInterval(function(){
-
-location.reload();
-
-},15000);
-
-
-
 </script>
 
-
 {% endblock %}
+

@@ -1,2 +1,29 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+
+# Flask / local database
+instance/
+*.db
+
+# Environment variables
+.env
+
+# ML / dataset files
+dataset/
+models/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
