@@ -6,6 +6,7 @@ from models import db, User
 from routes.auth import auth_bp
 from routes.dashboard import dashboard_bp
 from routes.prediction import prediction_bp
+from routes.traffic_api import traffic_api_bp
 
 
 app = Flask(__name__)
@@ -28,6 +29,7 @@ def load_user(user_id):
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(prediction_bp)
+app.register_blueprint(traffic_api_bp)
 
 
 if __name__ == '__main__':

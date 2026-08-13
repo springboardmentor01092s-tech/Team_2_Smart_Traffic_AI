@@ -1,21 +1,27 @@
 from flask import Blueprint, request, jsonify
 import pickle
 import pandas as pd
-
+import os
 
 prediction_bp = Blueprint(
     "prediction",
     __name__
 )
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Load AI model
 model = pickle.load(
-    open("models/traffic_model.pkl", "rb")
+    open(
+        os.path.join(BASE_DIR, "ml", "traffic_model.pkl"),
+        "rb"
+    )
 )
 
 encoder = pickle.load(
-    open("models/label_encoder.pkl", "rb")
+    open(
+        os.path.join(BASE_DIR, "ml", "label_encoder.pkl"),
+        "rb"
+    )
 )
 
 
@@ -38,14 +44,9 @@ def predict():
         ]
     )
 
-
     prediction = model.predict(input_data)
 
-
-    congestion = encoder.inverse_transform(
-        prediction
-    )
-
+    congestion = encoder.inverse_transform(prediction)
 
     return jsonify(
         {
