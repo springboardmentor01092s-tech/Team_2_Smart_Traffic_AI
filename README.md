@@ -427,15 +427,174 @@ gantt
 
 ### Milestone 3 — Weeks 5–6 · Alerts, Analytics & AI Insights
 
-| Task | Description |
-|---|---|
-| 1. Traffic Alert System | Monitoring & management workflow for key traffic conditions |
-| 2. Congestion/Accident Notifications | Notification generation for heavy congestion & accidents |
-| 3. Analytics & Heatmap Dashboard | Stats, charts, congestion summaries, hotspot heatmaps |
-| 4. Traffic Trend Analysis | Historical pattern, peak-period & volume trend detection |
-| 5. AI Recommendations & Reports | ML + analytics + trends + incidents → recommendations & reports |
+This milestone is where TrafficVision AI stops being a set of separate features and starts behaving like one intelligent system — detection feeds alerts, alerts and history feed analytics, and everything together feeds the final AI recommendation layer.
 
-**Outcome:** End-to-end alert, notification, analytics, heatmap, trend, and AI reporting workflows completed.
+| Task | Milestone 3 Task |
+|:---:|---|
+| **Task 1** | Implement Traffic Alert System |
+| **Task 2** | Generate Congestion & Accident Notifications |
+| **Task 3** | Build Analytics & Heatmap Dashboard |
+| **Task 4** | Develop Traffic Trend Analysis Workflows |
+| **Task 5** | Generate AI-Based Traffic Recommendations & Reports |
+
+```mermaid
+flowchart LR
+    T1["Task 1\nAlert System"] --> T2["Task 2\nNotifications"]
+    T2 --> T3["Task 3\nAnalytics & Heatmap"]
+    T3 --> T4["Task 4\nTrend Analysis"]
+    T4 --> T5["Task 5\nAI Recommendations & Reports"]
+
+    style T1 fill:#7f1d1d,color:#fff
+    style T2 fill:#9a3412,color:#fff
+    style T3 fill:#854d0e,color:#fff
+    style T4 fill:#166534,color:#fff
+    style T5 fill:#1e3a8a,color:#fff
+```
+
+> **Insight:** These five tasks aren't independent checkboxes — they form a **pipeline**. Alerts (Task 1) generate the raw event data that notifications (Task 2) push out. That same event data becomes part of the historical record analytics (Task 3) and trends (Task 4) draw on. Finally, Task 5 pulls from *all four* of the previous tasks to produce a recommendation — meaning Milestone 3's real deliverable is the wiring between tasks, not just the tasks themselves.
+
+---
+
+#### 🔴 Task 1 — Implement Traffic Alert System
+
+Builds the core workflow that detects and manages significant traffic conditions across the network — the foundation every other task in this milestone depends on.
+
+**What was implemented:**
+- Detection logic for congestion, accidents, roadwork, and weather-related conditions
+- Alert severity levels (e.g. Low / Medium / High / Critical)
+- Alert status lifecycle: `Active → Acknowledged → Resolved`
+- Filtering by road, severity, type, and time range
+- Manual resolution workflow for traffic operators
+
+```mermaid
+stateDiagram-v2
+    [*] --> Active: Condition detected
+    Active --> Acknowledged: Operator reviews
+    Acknowledged --> Resolved: Issue cleared
+    Active --> Resolved: Auto-resolved
+    Resolved --> [*]
+```
+
+**Example:** A sustained speed drop below 10 km/h on **Anna Salai** for more than 5 minutes automatically creates an alert with severity `High` and status `Active`, ready to be picked up by Task 2.
+
+---
+
+#### 🟠 Task 2 — Generate Congestion & Accident Notifications
+
+Takes the alerts created in Task 1 and turns them into timely, human-readable notifications — the difference between data sitting in a database and information reaching the people who need it.
+
+**What was implemented:**
+- Notification generation rules for **heavy congestion** thresholds
+- Notification generation rules for **accident-related** incidents
+- De-duplication logic so the same event doesn't spam repeat notifications
+- Notification payloads linked back to the originating alert record
+
+```mermaid
+sequenceDiagram
+    participant D as Detection Engine
+    participant A as Alert System (Task 1)
+    participant N as Notification Generator (Task 2)
+    participant O as Operator Dashboard
+
+    D->>A: Congestion % exceeds threshold
+    A->>A: Create alert (severity: High)
+    A->>N: Trigger notification
+    N->>N: Check for duplicate/recent alert
+    N->>O: Push "Heavy congestion on X Road"
+    O->>A: Acknowledge / Resolve
+```
+
+**Example:** Congestion crosses 85% on **Silk Board Junction** → Task 1 logs the alert → Task 2 immediately generates: *"⚠️ Heavy congestion detected — Silk Board Junction (85% congestion, avg. speed 8 km/h)."*
+
+---
+
+#### 🟡 Task 3 — Build Analytics & Heatmap Dashboard
+
+Converts the growing pool of traffic and alert data into a visual control-room view — statistics, charts, and a color-graded map that let an operator understand network health in seconds.
+
+**What was implemented:**
+- Traffic statistics panel (avg. speed, volume, % congested roads)
+- Congestion summaries grouped into Low / Moderate / Heavy
+- High-congestion area identification
+- Interactive heatmap (React-Leaflet) with color-coded overlays
+- Analytics charts (Recharts) for time-based breakdowns
+
+```mermaid
+flowchart TB
+    A["Traffic Records"] --> B["Aggregation Engine"]
+    C["Alert Records (Task 1 & 2)"] --> B
+    B --> D["Dashboard Stat Tiles"]
+    B --> E["Congestion Heatmap"]
+    B --> F["Analytics Charts"]
+```
+
+**Example dashboard snapshot:**
+
+| Tile | Value |
+|---|---|
+| Network Avg. Speed | 24 km/h |
+| Roads Congested | 18% |
+| Peak Congestion Zone | MG Road – Silk Board |
+| Heatmap | 🟢🟡🔴 color-graded overlay |
+
+*(See [§6.6 Analytics & Heatmap Module](#66--analytics--heatmap-module) for the full walkthrough.)*
+
+---
+
+#### 🟢 Task 4 — Develop Traffic Trend Analysis Workflow
+
+Looks backward across days and weeks of stored data to answer *"is this normal, or is something changing?"* — turning single data points into patterns operators and planners can act on.
+
+**What was implemented:**
+- Peak / low traffic period detection
+- Congestion trend tracking (improving vs. worsening over time)
+- Average speed trend tracking per road/corridor
+- Traffic volume change detection
+- Trend visualization via time-series charts
+
+```mermaid
+flowchart LR
+    A["Historical Traffic Data"] --> B["Time-Window Aggregation"]
+    B --> C["Pattern Detection"]
+    C --> D["Peak/Low Periods"]
+    C --> E["Congestion Trend"]
+    C --> F["Speed Trend"]
+    C --> G["Volume Trend"]
+    D & E & F & G --> H["Trend Charts & Summaries"]
+```
+
+**Example:** Trend analysis on **Outer Ring Road** shows evening-peak average speed falling from 32 → 19 km/h over 8 weeks — a **worsening congestion trend** rather than a one-off spike.
+
+*(See [§6.7 Traffic Trend Analysis Module](#67--traffic-trend-analysis-module) for the full walkthrough.)*
+
+---
+
+#### 🔵 Task 5 — Generate AI-Based Traffic Recommendations & Reports
+
+The capstone task of Milestone 3 — combines everything upstream (predictions, live analytics, historical trends, and active incidents) into synthesized, human-readable recommendations and reports.
+
+**What was implemented:**
+- Recommendation engine combining ML predictions, analytics, and trend outputs
+- Incident- and route-aware suggestion logic
+- Auto-generated traffic reports summarizing conditions over a chosen period
+- Report data structured for future PDF export (see [Roadmap](#-14-scope-limitations--roadmap))
+
+```mermaid
+flowchart TB
+    P["🔮 ML Predictions"] --> R["AI Recommendation Engine"]
+    AN["📊 Analytics (Task 3)"] --> R
+    TR["📈 Trends (Task 4)"] --> R
+    AL["🚨 Active Alerts (Task 1 & 2)"] --> R
+    RT["🗺️ Route Data"] --> R
+    R --> REC["Actionable Recommendation"]
+    R --> REP["Traffic Report"]
+```
+
+**Example output:**
+
+> *"Heavy congestion predicted on Silk Board Junction between 6:00–7:30 PM based on current trend and historical pattern. Recommend rerouting via Bannerghatta Road (est. 12 min faster). 3 related alerts active in this zone over the past 2 hours."*
+
+**Outcome:** End-to-end alert, notification, analytics, heatmap, trend, and AI reporting workflows completed — the platform now closes the full loop from raw traffic data to an actionable, explainable recommendation.
 
 ### Milestone 4 — Weeks 7–8 · Testing, Deployment & Documentation
 - Application testing & workflow validation
