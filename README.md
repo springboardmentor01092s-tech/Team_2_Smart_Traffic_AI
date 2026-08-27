@@ -293,13 +293,59 @@ Detects and manages significant traffic events.
 - Severity & status tracking · filtering · resolution workflow
 
 ### 6.6 📊 Analytics & Heatmap Module
-Turns raw data into visual insight.
-- Traffic statistics, congestion summaries, volume analysis
-- High-congestion area identification via interactive heatmaps
-- Analytics charts and historical insights
+
+This module is the platform's "big picture" lens — instead of looking at one road at a time, it aggregates traffic data across the entire monitored network and turns it into visual, at-a-glance insight that a traffic operator can act on in seconds rather than minutes.
+
+**What it does:**
+- **Traffic statistics** — rolls up raw traffic records into summary numbers: average speed across the network, total vehicle volume, percentage of roads currently congested
+- **Congestion summaries** — groups current conditions into Low / Moderate / Heavy buckets so operators instantly see the overall health of the network
+- **Volume analysis** — tracks how many vehicles are passing through key roads/intersections over a given window
+- **High-congestion area identification** — automatically flags the roads or zones with the worst conditions, so attention goes where it's needed first
+- **Interactive heatmaps** — a color-coded map (green → yellow → red) overlaid on the road network, letting operators *see* congestion geographically instead of reading it off a table
+- **Analytics charts & historical insights** — bar/line charts (via Recharts) summarizing conditions over custom time ranges
+
+**Worked example:**
+
+> An operator opens the dashboard at 6:00 PM. The heatmap immediately shows a red cluster along the **MG Road – Silk Board corridor**. The analytics panel confirms: average speed has dropped from 38 km/h to 11 km/h in the last 20 minutes, and volume is up 64% versus the same time last week. Because this is flagged as a **high-congestion area**, it's surfaced at the top of the dashboard rather than buried in a list — the operator can immediately cross-check it against the Alerts module to see if an accident is the cause, or just evening rush hour.
+
+**Typical dashboard tiles:**
+
+| Tile | Example Value | What it tells the operator |
+|---|---|---|
+| Network Average Speed | 24 km/h | Is traffic generally flowing or stalled? |
+| Congested Roads (%) | 18% of monitored roads | How widespread is the slowdown? |
+| Peak Congestion Zone | MG Road – Silk Board | Where to focus attention right now |
+| Total Vehicle Volume (1h) | 42,300 vehicles | Is this a high-traffic period? |
+| Heatmap | 🟢🟡🔴 color-graded map | Where congestion is concentrated geographically |
+
+> **Insight:** The heatmap isn't just a prettier version of the stats table — color-encoded geography lets a human brain spot *clusters and spread* (e.g., "congestion is bleeding from Silk Board into the connecting roads") far faster than scanning numbers ever could. That pattern-recognition speed is the entire point of this module.
 
 ### 6.7 📈 Traffic Trend Analysis Module
-Historical pattern discovery: peak/low traffic periods, congestion trends, average speed trends, and volume changes — visualized via charts and analytical summaries.
+
+While the Analytics module answers *"what's happening right now?"*, the Trend Analysis module answers *"what does 'normal' look like, and how are things changing over time?"* — it works by comparing current conditions against days, weeks, or months of stored historical traffic data.
+
+**What it identifies:**
+- **Traffic patterns** — recurring shapes in the data, e.g. a predictable congestion spike every weekday morning
+- **Peak traffic periods** — the specific hours where volume and congestion consistently run highest (commonly 8–10 AM and 6–8 PM in urban corridors)
+- **Low traffic periods** — quiet windows (e.g. late night or mid-morning) useful for planning roadwork or maintenance
+- **Congestion trends** — whether a road is getting *better or worse* over weeks/months, not just today
+- **Average speed trends** — long-term speed changes on a route, useful for spotting slow-building problems before they become critical
+- **Traffic volume changes** — growth or decline in vehicle counts over time, e.g. after a new office complex opens nearby
+
+**Worked example:**
+
+> A city planner filters the Trend Analysis view for **Outer Ring Road** over the last 8 weeks. The chart shows average speed during the 6–8 PM peak has fallen from 32 km/h to 19 km/h, a steady week-over-week decline rather than a one-off spike. Cross-referencing volume data shows a 22% rise in vehicle counts over the same window. This trend — not any single day's snapshot — is what justifies flagging the corridor for a longer-term intervention (e.g. signal retiming or an alternate route campaign) rather than a one-off alert.
+
+**Example trend outputs:**
+
+| Metric | This Week | 4 Weeks Ago | Trend |
+|---|---|---|---|
+| Morning peak avg. speed | 21 km/h | 27 km/h | 📉 Declining |
+| Evening peak start time | 5:40 PM | 6:10 PM | ⏪ Shifting earlier |
+| Weekend volume | +12% vs. weekday | — | 📈 Rising |
+| Congestion frequency (Heavy) | 5 days/week | 3 days/week | 📉 Worsening |
+
+> **Insight:** A single congested moment could just be noise — an accident, bad weather, a one-off event. Trend analysis is what turns noise into *signal*: it's the difference between reacting to today's traffic jam and recognizing that a road needs structural attention because the same slowdown keeps recurring and getting worse.
 
 ### 6.8 🤖 AI Recommendation & Report Module
 Synthesizes **predictions + analytics + trends + incidents + routes** into actionable recommendations and generated traffic reports.
