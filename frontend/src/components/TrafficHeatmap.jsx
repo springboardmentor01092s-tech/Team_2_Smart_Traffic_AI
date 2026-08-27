@@ -1,7 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   MapContainer,
   TileLayer,
+  CircleMarker,
+  Popup,
   useMap,
 } from "react-leaflet";
 
@@ -18,7 +20,7 @@ import api from "../services/api";
  * ==========================================================
  */
 
-function HeatLayer({ points }) {
+function HeatLayer({ points, enabled }) {
   const map = useMap();
   const heatLayerRef = useRef(null);
 
@@ -36,6 +38,10 @@ function HeatLayer({ points }) {
       );
 
       heatLayerRef.current = null;
+    }
+
+    if (!enabled) {
+      return;
     }
 
     /*
@@ -110,9 +116,52 @@ function HeatLayer({ points }) {
         heatLayerRef.current = null;
       }
     };
-  }, [map, points]);
+  }, [enabled, map, points]);
 
   return null;
+}
+
+function MarkerLayer({ points }) {
+  return points.map((point, index) => {
+    const intensity = Math.max(
+      0,
+      Math.min(1, Number(point.intensity) || 0)
+    );
+    const color =
+      intensity >= 0.75
+        ? "#ef4444"
+        : intensity >= 0.5
+        ? "#f97316"
+        : intensity >= 0.25
+        ? "#f59e0b"
+        : "#22c55e";
+
+    return (
+      <CircleMarker
+        key={`${point.id || point.name || "point"}-${index}`}
+        center={[Number(point.lat), Number(point.lng)]}
+        radius={Math.max(5, 5 + intensity * 4)}
+        pathOptions={{
+          color,
+          fillColor: color,
+          fillOpacity: 0.8,
+          weight: 1,
+        }}
+      >
+        <Popup>
+          <div className="text-sm">
+            <strong>{point.name || point.roadName || "Traffic location"}</strong>
+            <br />
+            Congestion: {(intensity * 100).toFixed(1)}%
+            <br />
+            Speed: {Number(point.averageSpeed || point.speed || 0).toFixed(1)} km/h
+            <br />
+            Source: {point.source || "TrafficVision AI"}
+          </div>
+        </Popup>
+      </CircleMarker>
+    );
+  });
 }
 
 
@@ -181,7 +230,13 @@ function MapCenter({ points }) {
  * ==========================================================
  */
 
-export default function TrafficHeatmap() {
+export default function TrafficHeatmap({
+  points: pointsProp,
+  title = "Traffic Congestion Heatmap",
+  subtitle = "Live traffic observations recorded by TrafficVision AI",
+  height = "h-[450px]",
+}) {
+  const isControlled = Array.isArray(pointsProp);
   const [points, setPoints] =
     useState([]);
 
@@ -191,6 +246,22 @@ export default function TrafficHeatmap() {
   const [error, setError] =
     useState("");
 
+  const [threshold, setThreshold] =
+    useState(0);
+
+  const [showHeat, setShowHeat] =
+    useState(true);
+
+  const [showMarkers, setShowMarkers] =
+    useState(true);
+
+  const visiblePoints = useMemo(
+    () => (isControlled ? pointsProp : points).filter(
+      (point) => Number(point.intensity) * 100 >= threshold
+    ),
+    [isControlled, points, pointsProp, threshold]
+  );
+
   /*
    * Load real traffic heatmap
    * data from backend.
@@ -199,6 +270,7 @@ export default function TrafficHeatmap() {
     async () => {
       try {
         setError("");
+        setLoading(true);
 
         const response =
           await api.get(
@@ -232,6 +304,11 @@ export default function TrafficHeatmap() {
    * Initial load + automatic refresh.
    */
   useEffect(() => {
+    if (isControlled) {
+      setLoading(false);
+      return undefined;
+    }
+
     loadHeatmap();
 
     const interval =
@@ -245,7 +322,7 @@ export default function TrafficHeatmap() {
         interval
       );
     };
-  }, []);
+  }, [isControlled]);
 
   /*
    * Default India view.
@@ -267,13 +344,55 @@ export default function TrafficHeatmap() {
 
         <div>
           <p className="text-sm font-medium text-slate-200">
-            Traffic Congestion Heatmap
+            {title}
           </p>
 
           <p className="text-xs text-slate-500 mt-1">
-            Live traffic observations
-            recorded by TrafficVision AI
+            {subtitle}
           </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 mb-4 rounded-lg border border-slate-800 bg-slate-900/50 px-3 py-2">
+          <label className="flex items-center gap-2 text-xs text-slate-400">
+            Minimum congestion
+            <input
+              type="range"
+              min="0"
+              max="80"
+              step="10"
+              value={threshold}
+              onChange={(event) => setThreshold(Number(event.target.value))}
+              className="accent-blue-400"
+            />
+            <span className="w-8 text-right text-slate-200">{threshold}%</span>
+          </label>
+
+          <button
+            type="button"
+            onClick={() => setShowHeat((value) => !value)}
+            className={`rounded-md border px-2.5 py-1 text-xs transition-colors ${showHeat ? "border-blue-500/40 bg-blue-500/10 text-blue-300" : "border-slate-700 text-slate-500"}`}
+          >
+            Heat layer
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowMarkers((value) => !value)}
+            className={`rounded-md border px-2.5 py-1 text-xs transition-colors ${showMarkers ? "border-blue-500/40 bg-blue-500/10 text-blue-300" : "border-slate-700 text-slate-500"}`}
+          >
+            Location markers
+          </button>
+
+          {!isControlled && (
+            <button
+              type="button"
+              onClick={loadHeatmap}
+              disabled={loading}
+              className="ml-auto rounded-md border border-slate-700 px-2.5 py-1 text-xs text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+            >
+              {loading ? "Refreshing..." : "Refresh"}
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-4 text-xs text-slate-500">
@@ -305,7 +424,7 @@ export default function TrafficHeatmap() {
 
       {loading ? (
 
-        <div className="h-[450px] flex items-center justify-center rounded-lg bg-slate-900">
+        <div className={`${height} flex items-center justify-center rounded-lg bg-slate-900`}>
 
           <div className="flex items-center gap-3">
 
@@ -321,7 +440,7 @@ export default function TrafficHeatmap() {
 
       ) : error ? (
 
-        <div className="h-[450px] flex items-center justify-center rounded-lg bg-slate-900">
+        <div className={`${height} flex items-center justify-center rounded-lg bg-slate-900`}>
 
           <div className="text-center">
 
@@ -349,7 +468,7 @@ export default function TrafficHeatmap() {
             center={defaultCenter}
             zoom={5}
             scrollWheelZoom={true}
-            className="h-[450px] w-full rounded-lg"
+            className={`${height} w-full rounded-lg`}
           >
 
             <TileLayer
@@ -358,17 +477,20 @@ export default function TrafficHeatmap() {
             />
 
             <HeatLayer
-              points={points}
+              points={visiblePoints}
+              enabled={showHeat}
             />
 
+            {showMarkers && <MarkerLayer points={visiblePoints} />}
+
             <MapCenter
-              points={points}
+              points={visiblePoints}
             />
 
           </MapContainer>
 
 
-          {points.length === 0 && (
+          {visiblePoints.length === 0 && (
 
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
 

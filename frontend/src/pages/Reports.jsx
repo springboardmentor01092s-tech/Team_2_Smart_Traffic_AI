@@ -14,6 +14,7 @@ import {
 
 import Layout from "../components/Layout";
 import StatCard from "../components/StatCard";
+import TrafficHeatmap from "../components/TrafficHeatmap";
 import api from "../services/api";
 
 // ==========================================================
@@ -550,6 +551,12 @@ export default function Reports() {
             />
 
           </div>
+
+          <TrafficHeatmap
+            title="Interactive Congestion Map"
+            subtitle="Explore live traffic intensity by location"
+            height="h-[380px]"
+          />
 
           {/* ================================================
               AI RECOMMENDATIONS

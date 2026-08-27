@@ -34,6 +34,7 @@ import "leaflet.heat";
 
 import Layout from "../components/Layout";
 import StatCard from "../components/StatCard";
+import TrafficHeatmap from "../components/TrafficHeatmap";
 import api from "../services/api";
 
 // ==========================================================
@@ -3026,6 +3027,13 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      <TrafficHeatmap
+        points={allHeatmapPoints}
+        title="Interactive Congestion Heatmap"
+        subtitle="Filter live congestion and inspect individual locations"
+        height="h-[420px]"
+      />
     </Layout>
   );
 }
