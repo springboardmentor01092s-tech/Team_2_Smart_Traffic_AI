@@ -49,8 +49,7 @@ The platform is designed to improve traffic monitoring, support transportation p
 ---
 
 ## 3. Architecture Overview
-
-```text
+''' 
                     Users / Traffic Operators
                               |
                               v
@@ -710,11 +709,10 @@ Platform Performance: Provide stable traffic monitoring and analytics workflows.
 
 
 22. Team Members
-Asvitha J — asvitha.28csa@licet.ac.in
+Hemamrutha M P — hemamruthamp2005@gmail.com
 Barigala Shainy — shainysureshb@gmail.com
 Maharshini — maharshini01@gmail.com
 Pavan S — spavannalini29225@gmail.com
-Hemamrutha M P — hemamruthamp2005@gmail.com
 Shreya Samal — shreysamal101@gmail.com
 Dibita Biswas — dibitabiswas4@gmail.com
 
