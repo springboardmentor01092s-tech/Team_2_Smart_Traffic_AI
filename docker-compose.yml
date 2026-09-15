@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: trafficvision
-      POSTGRES_PASSWORD: trafficvision
+      POSTGRES_PASSWORD: PostgreSQL_Password
       POSTGRES_DB: trafficvision_ai
     ports:
       - "5432:5432"
